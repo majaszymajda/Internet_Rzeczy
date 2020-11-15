@@ -36,8 +36,8 @@ def importowanie_danych_csv(nazwa_pliku):
 
 def konfiguracja():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-m', '--metoda', default='MQTT', type=str, choices=['MQTT', 'HTTP'], help='metoda wysylania danych')
-    # parser.add_argument('-a', '--adres', required=True, type=str, help='wskazanie miejsca docelowego dla przesylania danych')
+    parser.add_argument('-m', '--metoda', default='HTTP', type=str, choices=['MQTT', 'HTTP'], help='metoda wysylania danych')
+    parser.add_argument('-a', '--adres', default='0.0.0.0:2323', type=str, help='wskazanie miejsca docelowego dla przesylania danych')
     parser.add_argument('-c', '--czestotliwosc', default=15, type=int, choices=[15, 30, 60], help='czestotliwosc wysylania danych [h]')
 
     args = parser.parse_args()
@@ -65,16 +65,17 @@ def requests_post(url, data):
     return result
 
 
-def wyslij_dane(zwroc_dane):
+def wyslij_dane(zwroc_dane, sciezka):
     konfig = konfiguracja()
     czestotliwosc_funkcji = konfig.czestotliwosc
     metoda = konfig.metoda
+    adres = konfig.adres
 
     while (True):
         czas = godzina()
-        print(zwroc_dane(czas))
+        dane = zwroc_dane(czas)
         if metoda == "HTTP":
-            pass  # requests.post(url=adres, json=dane)
+            requests.post(url=f'http://{adres}/{sciezka}', json=dane)
         elif metoda == "MQTT":
             pass  # wyslij dane do brokera mqtt
         else:

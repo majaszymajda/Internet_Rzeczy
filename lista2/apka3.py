@@ -13,6 +13,6 @@ def zwroc_dane(czas):
 
 
 if __name__ == '__main__':
-    base.wyslij_dane(zwroc_dane)
+    base.wyslij_dane(zwroc_dane, 'dane_z_licznika_pradu')
 
 

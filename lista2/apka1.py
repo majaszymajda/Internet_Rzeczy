@@ -50,4 +50,4 @@ def zwroc_dane(czas):
 
 if __name__ == '__main__':
     dane = base.importowanie_danych_json('Dane/dane_pogodowe.json')
-    base.wyslij_dane(zwroc_dane)
+    base.wyslij_dane(zwroc_dane, 'dane_pogodowe')
