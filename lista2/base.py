@@ -85,6 +85,10 @@ def wyslij_dane(zwroc_dane):
     return 0
 
 
+def godzina_na_str(czas):
+    return f'{str(czas[0]).rjust(2, "0")}:{str(czas[1]).rjust(2, "0")}'
+
+
 if __name__ == "__main__":
     # while (True):
     #    print(godzina())

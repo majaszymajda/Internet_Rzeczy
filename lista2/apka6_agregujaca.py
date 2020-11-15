@@ -1,20 +1,22 @@
 import time
+import argparse
 import requests
 import paho.mqtt.client as mqtt
+from flask import Flask, request
 
 TOPIC = 'MajaAndMarta/time'
 
+app = Flask(__name__)
 
-def main():
-    mqtt_client = mqtt.Client()
-    mqtt_client.connect("test.mosquitto.org", 1883, 60)
 
-    while True:
-        r = requests.get('http://127.0.0.1:2323/time?tz=+2')
-        print(r.text)
-        mqtt_client.publish(TOPIC, payload=r.text)
-        time.sleep(5)
+@app.route('/')
+def index():
+    return '''
+    <h1>Serwis agregujacy dane</h1>
+    sprawdź mnie :)
+    '''
 
+@app.route('')
 
 if __name__ == "__main__":
     main()
