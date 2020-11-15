@@ -1,7 +1,8 @@
 import argparse
-import time
-import json
 import csv
+import json
+import requests
+import time
 
 
 def importowanie_danych_json(nazwa_pliku):
@@ -64,20 +65,32 @@ def requests_post(url, data):
     return result
 
 
+def wyslij_dane(zwroc_dane):
+    konfig = konfiguracja()
+    czestotliwosc_funkcji = konfig.czestotliwosc
+    metoda = konfig.metoda
+
+    while (True):
+        czas = godzina()
+        print(zwroc_dane(czas))
+        if metoda == "HTTP":
+            pass  # requests.post(url=adres, json=dane)
+        elif metoda == "MQTT":
+            pass  # wyslij dane do brokera mqtt
+        else:
+            print("Nieznana metoda: {metoda}")
+            exit(1)
+        time.sleep(czestotliwosc_funkcji)
+
+    return 0
 
 
+if __name__ == "__main__":
+    # while (True):
+    #    print(godzina())
+    #    time.sleep(5)
 
-# while (True):
-#    print(godzina())
-#    time.sleep(5)
+    # konfiguracja()
 
-
-
-# konfiguracja()
-
-
-importowanie_danych_csv('Dane/dane_temp.csv')
-# importowanie_danych_json('Dane/dane_pogodowe.json')
-
-
-
+    importowanie_danych_csv('Dane/dane_temp.csv')
+    # importowanie_danych_json('Dane/dane_pogodowe.json')

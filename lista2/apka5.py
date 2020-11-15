@@ -5,7 +5,7 @@ import time
 
 
 def zwroc_dane(czas):
-    dane = base.importowanie_danych_json('Dane/dane_pogodowe.json')
+    dane = base.importowanie_danych_json('Dane/dane_z_paneli.json')
     # print(dane)
     for i in range(len(dane["observations"])):
         czas_z_danych = f'{czas[0]}:{str(czas[1]).ljust(2, "0")}'
@@ -14,7 +14,7 @@ def zwroc_dane(czas):
         data_str = f"{data: %H:%M}"
         print(data_str, czas_z_danych)
         if czas[1] == 15:
-            
+
             temperatura = (dane["observations"][i]['temp'] - 32)/2
         if czas[1] == 45:
 
