@@ -15,6 +15,7 @@ dane_temp_tab = []
 dane_z_licznika_pradu_tab = []
 dane_z_paneli_tab = []
 dane_ilosci_osob_w_domu_tab = []
+czestotliowsc = 60
 
 @app.route('/')
 def index():
@@ -104,5 +105,15 @@ def ilosc_osob_w_domu():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-m', '--metoda', default='HTTP', type=str, choices=['MQTT', 'HTTP'], help='metoda odbierania danych')
+    parser.add_argument('-c', '--czestotliwosc', default=15, type=int, choices=[15, 30, 60], help='czestotliwosc agregowania danych [min]')
 
-    app.run(host='0.0.0.0', port=2323)
+    args = parser.parse_args()
+    czestotliowsc = args.czestotliwosc
+    if args.metoda == "HTTP":
+        app.run(host='0.0.0.0', port=2323)
+    else:
+        pass # broker MQTT
+
+
