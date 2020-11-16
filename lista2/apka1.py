@@ -19,7 +19,7 @@ def znajdz_dane(czas):
         if data_str == czas:
             temperatura = konwersja_temp(dane["observations"][i]['temp'])
             cisnienie = round((dane["observations"][i]['pressure']) * 33.86389, 2)
-            dane_wyjsciowe = {"Time:": data_str, "Temp":temperatura, "Pres": cisnienie}
+            dane_wyjsciowe = {"Time": data_str, "Temp":temperatura, "Pres": cisnienie}
             return dane_wyjsciowe
 
     return None

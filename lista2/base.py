@@ -70,6 +70,7 @@ def wyslij_dane(zwroc_dane, sciezka):
     czestotliwosc_funkcji = konfig.czestotliwosc
     metoda = konfig.metoda
     adres = konfig.adres
+    print(f'rozpoczynam wysylanie danych matoda: {metoda} na adres {adres}')
 
     while (True):
         czas = godzina()
