@@ -3,9 +3,12 @@ import csv
 import json
 import requests
 import time
+from flask import Flask
 import paho.mqtt.client as mqtt
 
 topic = 'MajaiMarta'
+
+app = Flask(__name__)
 
 
 def importowanie_danych_json(nazwa_pliku):
@@ -67,12 +70,15 @@ def metoda_publikacji(mqtt_client, topic, value):
         time.sleep(5)
 
 
+def godzina_na_str(czas):
+    return f'{str(czas[0]).rjust(2, "0")}:{str(czas[1]).rjust(2, "0")}'
+
+
 def wyslij_dane(zwroc_dane, sciezka):
     konfig = konfiguracja()
     czestotliwosc_funkcji = konfig.czestotliwosc
     metoda = konfig.metoda
     adres = konfig.adres
-    print(f'rozpoczynam wysylanie danych matoda: {metoda} na adres {adres}')
 
     while (True):
         czas = godzina()
@@ -80,10 +86,7 @@ def wyslij_dane(zwroc_dane, sciezka):
         if metoda == "HTTP":
             requests.post(url=f'http://{adres}/{sciezka}', json=dane)
         elif metoda == "MQTT":
-            mqtt_client = mqtt.Client()
-            mqtt_client.connect("test.mosquitto.org", 1883, 60)
-
-            metoda_publikacji(mqtt_client, f"{topic}/{sciezka}", str(dane))
+            pass  # wyslij dane do brokera mqtt
         else:
             print("Nieznana metoda: {metoda}")
             exit(1)
@@ -92,16 +95,5 @@ def wyslij_dane(zwroc_dane, sciezka):
     return 0
 
 
-def godzina_na_str(czas):
-    return f'{str(czas[0]).rjust(2, "0")}:{str(czas[1]).rjust(2, "0")}'
-
-
 if __name__ == "__main__":
-    # while (True):
-    #    print(godzina())
-    #    time.sleep(5)
-
-    # konfiguracja()
-
     importowanie_danych_csv('Dane/dane_temp.csv')
-    # importowanie_danych_json('Dane/dane_pogodowe.json'

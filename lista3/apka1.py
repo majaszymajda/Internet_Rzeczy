@@ -1,10 +1,23 @@
 import base
 from datetime import datetime
+from flask import Flask
+from flask_apscheduler import APScheduler
 
+app = Flask(__name__)
+scheduler = APScheduler()
 
 dane = None
 
 
+@app.route('/')
+def index():
+    return f'''
+    <h1>aplikacja pierwsza </h1>
+    sprawdź mnie :)
+    '''
+
+
+# @app.route('/znajdz_dane')
 def znajdz_dane(czas):
     # print(czas)
     for i in range(len(dane["observations"])):
@@ -26,6 +39,13 @@ def konwersja_temp(temp):
     return round((temp-32)/1.8, 2)
 
 
+@app.route('/zwroc_dane')
+def zwrocenie():
+    czas = base.godzina()
+    dane = zwroc_dane(czas)
+    return dane
+
+
 def zwroc_dane(czas):
     # print(dane)
     if czas[1] == 15:
@@ -45,7 +65,16 @@ def zwroc_dane(czas):
     return znajdz_dane(base.godzina_na_str(czas))
 
 
+@app.route("/zmiana")
+def zmiana_interwalu():
+    nowy_interwal = 2
+    scheduler.modify_job('dodawanie_danych',trigger='interval', seconds=nowy_interwal)
+    return 'ok'
+
+
 if __name__ == '__main__':
     dane = base.importowanie_danych_json('Dane/dane_pogodowe.json')
-    base.wyslij_dane(zwroc_dane, 'dane_pogodowe')
-    
+    # base.wyslij_dane(zwroc_dane, 'dane_pogodowe')
+    scheduler.add_job(id='dodawanie_danych', func=zwrocenie, trigger='interval', seconds=5)
+    scheduler.start()
+    app.run(host='0.0.0.0', port=2321)

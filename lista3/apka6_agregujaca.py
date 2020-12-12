@@ -167,6 +167,6 @@ if __name__ == "__main__":
     czestotliowsc = args.czestotliowsc
 
     if args.metoda == "HTTP":
-        app.run(host='0.0.0.0', port=2323)
+        app.run(host='0.0.0.0', port=2326)
     else:
         main()
