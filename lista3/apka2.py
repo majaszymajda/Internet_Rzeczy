@@ -22,7 +22,6 @@ def zwrocenie():
 
 
 def zwroc_dane(czas):
-    dane = base.importowanie_danych_csv('Dane/dane_temp.csv')
     for i in range(1, 97):
         czas_z_danych = f'{czas[0]}:{str(czas[1]).ljust(2, "0")}'
         if czas_z_danych == dane[i][0]:
@@ -39,6 +38,7 @@ def zmiana_interwalu():
 
 if __name__ == '__main__':
     # base.wyslij_dane(zwroc_dane, 'dane_temp')
+    dane = base.importowanie_danych_csv('Dane/dane_temp.csv')
     scheduler.add_job(id='dodawanie_danych', func=zwrocenie, trigger='interval', seconds=5)
     scheduler.start()
     app.run(host='0.0.0.0', port=2322)

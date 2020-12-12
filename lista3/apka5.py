@@ -23,7 +23,6 @@ def zwrocenie():
 
 def zwroc_dane(czas):
     moc = 0
-    dane = base.importowanie_danych_json('Dane/dane_z_paneli.json')
     for panel in dane["manyData"]:
         for czas_iter in dane["manyData"][panel]:
             godzina = czas_iter.split()[1]
@@ -43,6 +42,7 @@ def zmiana_interwalu():
 
 if __name__ == '__main__':
     # base.wyslij_dane(zwroc_dane, 'dane_z_paneli')
+    dane = base.importowanie_danych_json('Dane/dane_z_paneli.json')
     scheduler.add_job(id='dodawanie_danych', func=zwrocenie, trigger='interval', seconds=5)
     scheduler.start()
     app.run(host='0.0.0.0', port=2325)
