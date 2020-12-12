@@ -1,6 +1,6 @@
 import base
 from datetime import datetime
-from flask import Flask
+from flask import Flask, request
 from flask_apscheduler import APScheduler
 
 app = Flask(__name__)
@@ -8,6 +8,7 @@ scheduler = APScheduler()
 
 dane = None
 
+# lista_czestotliwosci = [15, 30, 45, 60]
 
 @app.route('/')
 def index():
@@ -67,8 +68,16 @@ def zwroc_dane(czas):
 
 @app.route("/zmiana")
 def zmiana_interwalu():
-    nowy_interwal = 2
-    scheduler.modify_job('dodawanie_danych',trigger='interval', seconds=nowy_interwal)
+    freq_arg = request.args.get('freq')
+    try:
+        freq = int(freq_arg)
+    except ValueError:
+        return f'Nie ma takiej dostępnej częstotliwości: {freq_arg}', 400
+
+    if freq < 0:
+        return f'czestotliwość powinna być wieksza od zera', 400
+
+    scheduler.modify_job('dodawanie_danych', trigger='interval', seconds=freq)
     return 'ok'
 
 
