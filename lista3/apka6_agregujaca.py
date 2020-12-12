@@ -12,7 +12,7 @@ dane_temp_tab = []
 dane_z_licznika_pradu_tab = []
 dane_z_paneli_tab = []
 dane_ilosci_osob_w_domu_tab = []
-czestotliowsc = 60
+czy_grzeje = False
 
 temat1 = 'MajaiMarta/dane_pogodowe'
 temat2 = 'MajaiMarta/dane_temp'
@@ -29,6 +29,12 @@ def index():
     '''
 
 
+@app.route('/grzejnik')
+def grzejnik():
+    global czy_grzeje
+    czy_grzeje = not czy_grzeje
+
+
 def oblicz_srednia(czestotliowsc, tablica, klucz):
     dzielnik = czestotliowsc//15
     if len(tablica) < dzielnik:
@@ -37,22 +43,6 @@ def oblicz_srednia(czestotliowsc, tablica, klucz):
     sum = 0
     for i in range(dzielnik):
         sum += float(tablica[-i-1][klucz])
-    return sum/dzielnik
-
-
-def oblicz_srednia_MQTT(czestotliowsc, tablica, klucz):
-    tablica2 = []
-    for i in range(len(tablica)):
-        tablica2.append(tablica[i].rsplit(",", ":"))
-    print(tablica2)
-    dzielnik = czestotliowsc//15
-    if len(tablica) < dzielnik:
-        print("za malo danych")
-        return None
-    sum = 0
-    for j in range(dzielnik):
-
-        sum += 1  # float(tablica2[-j-1][klucz])
     return sum/dzielnik
 
 
@@ -134,8 +124,9 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     if msg.payload is not None:
         if str(msg.payload).find("Hum") is not None:
-            dane_temp_tab.append(msg.payload)
-            # oblicz_srednia_MQTT(czestotliowsc, dane_temp_tab, "Hum")
+            content = dict(msg.payload)
+            dane_temp_tab.append(content)
+            oblicz_srednia(czestotliowsc, dane_temp_tab, "Hum")
             # print(dane_temp_tab)
         if str(msg.payload).find("Pres") is not None:
             dane_pogodowe_tab.append(msg.payload)
@@ -145,10 +136,10 @@ def on_message(client, userdata, msg):
             dane_ilosci_osob_w_domu_tab.append(msg.payload)
         if str(msg.payload).find("Power") is not None:
             dane_z_paneli_tab.append(msg.payload)
-        print(msg.payload)
+        print(int(msg.payload))
 
 
-def main():
+def mqtt_metoda():
     mqtt_client = mqtt.Client()
     mqtt_client.on_connect = on_connect
     mqtt_client.on_message = on_message
@@ -169,4 +160,4 @@ if __name__ == "__main__":
     if args.metoda == "HTTP":
         app.run(host='0.0.0.0', port=2326)
     else:
-        main()
+        mqtt_metoda()
