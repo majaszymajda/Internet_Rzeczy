@@ -3,12 +3,14 @@ import csv
 import json
 import requests
 import time
-from flask import Flask
 import paho.mqtt.client as mqtt
-
-topic = 'MajaiMarta'
+from flask import Flask, request
+from flask_apscheduler import APScheduler
 
 app = Flask(__name__)
+scheduler = APScheduler()
+
+topic = 'MajaiMarta'
 
 
 def importowanie_danych_json(nazwa_pliku):
@@ -43,7 +45,7 @@ def importowanie_danych_csv(nazwa_pliku):
 def konfiguracja():
     parser = argparse.ArgumentParser()
     parser.add_argument('-m', '--metoda', default='HTTP', type=str, choices=['MQTT', 'HTTP'], help='metoda wysylania danych')
-    parser.add_argument('-a', '--adres', default='0.0.0.0:2323', type=str, help='wskazanie miejsca docelowego dla przesylania danych')
+    parser.add_argument('-a', '--adres', default='0.0.0.0:2326', type=str, help='wskazanie miejsca docelowego dla przesylania danych')
     parser.add_argument('-c', '--czestotliwosc', default=15, type=int, choices=[15, 30, 60], help='czestotliwosc wysylania danych [h]')
 
     args = parser.parse_args()
@@ -57,42 +59,59 @@ def godzina():
     return ((tick // 4, (tick % 4) * 15))
 
 
-def requests_post(url, data):
-    result = requests.post(url, data=data)
-    return result
-
-
-def metoda_publikacji(mqtt_client, topic, value):
-
-    while True:
-
-        mqtt_client.publish(topic=topic, payload=value)
-        time.sleep(5)
-
-
 def godzina_na_str(czas):
     return f'{str(czas[0]).rjust(2, "0")}:{str(czas[1]).rjust(2, "0")}'
 
 
-def wyslij_dane(zwroc_dane, sciezka):
-    konfig = konfiguracja()
-    czestotliwosc_funkcji = konfig.czestotliwosc
+@app.route("/zmiana")
+def zmiana_interwalu():
+    freq_arg = request.args.get('freq')
+    try:
+        freq = int(freq_arg)
+    except ValueError:
+        return f'Nie ma takiej dostępnej częstotliwości: {freq_arg}', 400
+
+    if freq < 0:
+        return f'czestotliwość powinna być wieksza od zera', 400
+
+    scheduler.modify_job('dodawanie_danych', trigger='interval', seconds=freq)
+    return 'ok'
+
+
+@app.route("/wyslij_dane")
+def wyslij_dane():
+    # czestotliwosc_funkcji = konfig.czestotliwosc
     metoda = konfig.metoda
     adres = konfig.adres
+    czas = godzina()
+    dane = funkcja_zwracajaca_dane(czas)
 
-    while (True):
-        czas = godzina()
-        dane = zwroc_dane(czas)
-        if metoda == "HTTP":
-            requests.post(url=f'http://{adres}/{sciezka}', json=dane)
-        elif metoda == "MQTT":
-            pass  # wyslij dane do brokera mqtt
-        else:
-            print("Nieznana metoda: {metoda}")
-            exit(1)
-        time.sleep(czestotliwosc_funkcji)
+    if metoda == "HTTP":
+        requests.post(url=f'http://{adres}/{podana_sciezka}', json=dane)
+    elif metoda == "MQTT":
+        mqtt_client = mqtt.Client()
+        mqtt_client.connect("test.mosquitto.org", 1883, 60)
+        mqtt_client.publish(topic=f"{topic}/{podana_sciezka}", payload=str(dane))
+    else:
+        print(f"Nieznana metoda: {metoda}")
+        exit(1)
 
     return 0
+
+
+def start_serwer(zwroc_dane, sciezka, port_podany):
+    global konfig
+    konfig = konfiguracja()
+
+    global podana_sciezka
+    podana_sciezka = sciezka
+
+    global funkcja_zwracajaca_dane
+    funkcja_zwracajaca_dane = zwroc_dane
+
+    scheduler.add_job(id='dodawanie_danych', func=wyslij_dane, trigger='interval', seconds=konfig.czestotliwosc)
+    scheduler.start()
+    app.run(host='0.0.0.0', port=port_podany)
 
 
 if __name__ == "__main__":
