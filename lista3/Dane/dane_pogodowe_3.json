@@ -1,0 +1,30 @@
+{
+	"metadata": {
+		"language": "en-US",
+		"transaction_id": "1605439872437:653595388",
+		"version": "1",
+		"location_id": "EPWR:9:PL",
+		"units": "e",
+		"expire_time_gmt": 1605503249,
+		"status_code": 200
+	},
+	"almanac_summaries": [
+		{
+			"class": "almanac",
+			"station_id": "PLQY12424",
+			"station_name": "Wroclaw-Strachowice",
+			"almanac_dt": "0919",
+			"interval": "D",
+			"avg_hi": 65.6,
+			"avg_lo": 46.7,
+			"record_hi": null,
+			"record_hi_yr": null,
+			"record_lo": null,
+			"record_lo_yr": null,
+			"mean_temp": 55,
+			"avg_precip": 0.1,
+			"avg_snow": null,
+			"record_period": 30
+		}
+	]
+}
