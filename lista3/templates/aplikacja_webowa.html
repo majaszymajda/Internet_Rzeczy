@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>inteligent_dom</title>
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        const url = 'grzejnik';
+        function myFunction() {
+            $.get(url, function(data, status){
+                console.log(`${data} and status is ${status}`);
+                $("#status_grzejnik").text(`${data}`);
+            });
+        }
+    </script>
+
+</head>
+
+<body>
+
+    <h1>Inteligenty Dom</h1>
+    <p>Aplikacja zbierające dane na temat produkcji i zużycia prądu w mieszkaniu </p>
+
+    <br>
+    <p>Włącz/wyłącz Grzejnik.</p>
+
+    <button onclick="myFunction()">GRZEJNIK</button>
+    <p id="status_grzejnik"></p>
+
+
+
+    <br>
+
+    <br>
+    {% for nazwa_apki, dane_z_apki in zbior_danych['sensory'].items() %}
+    <h2>Aplikacja {{nazwa_apki}} </h2>
+        {% if dane_z_apki|count == 0 %}
+        <p> Aplikacja wyłączona </p>
+        {% else %}
+        <p>Aplikacja włączona</p>
+
+        <table style="width:100%">
+            <tr>
+                {% for klucz in dane_z_apki[0] %}
+                <th>{{klucz}}</th>
+                {% endfor %}
+
+            </tr>
+            {% for dane in dane_z_apki %}
+            <tr>
+                {% for wartosc in dane.values() %}
+                    <td> {{ wartosc }} </td>
+
+                {% endfor %}
+
+            </tr>
+            {% endfor %}
+
+        </table>
+        {% endif %}
+    <br>
+
+        {% if nazwa_apki == 'sensor_pogodowy' %}
+            <h3> Średnia z temperatury powietrza: {{zbior_danych['srednie']['srednia_temperaturowa_powietrza']}}</h3>
+        {% elif nazwa_apki == 'sensor_temperatury' %}
+            <h3> Średnia z temperatury w domu: {{zbior_danych['srednie']['srednia_temperatury_w_domu']}}</h3>
+        {% elif nazwa_apki == 'sensor_z_licznika_pradu' %}
+            <h3> Średnia zużytego pradu: {{zbior_danych['srednie']['srednia_zuzycia_pradu']}} </h3>
+        {% elif nazwa_apki == 'sensor_z paneli' %}
+            <h3> Średnia z wyprodukowanego prądu:{{zbior_danych['srednie']['srednia_produkcji']}} </h3>
+        {% elif nazwa_apki == 'sensor_ilosci_osob' %}
+            <h3> Średnia z ilości osób w domu: {{zbior_danych['srednie']['srednia_ludzi']}}</h3>
+        {% endif %}
+    <br>
+    {% endfor %}
+
+    <br>
+
+
+
+
+
+</body>
+
+</html>
