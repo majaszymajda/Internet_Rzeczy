@@ -1,5 +1,5 @@
 import argparse
-# import requests
+import requests
 import paho.mqtt.client as mqtt
 from flask import Flask, request, render_template
 
@@ -14,8 +14,6 @@ dane_z_licznika_pradu_tab = []
 dane_z_paneli_tab = []
 dane_ilosci_osob_w_domu_tab = []
 czy_grzeje = False
-czestotliowsc = 60
-
 
 
 temat1 = 'MajaiMarta/dane_pogodowe'
@@ -47,6 +45,15 @@ def index():
 
     return render_template('aplikacja_webowa.html', zbior_danych=zbior_danych)
 
+
+@app.route("/zmiana_interwalu")
+def zmiana_interwalu():
+    freq = request.args.get('freq')
+    port = request.args.get('port')
+
+    req = requests.get(url=f'http://0.0.0.0:{port}/zmiana?freq={freq}&port={port}')
+
+    return req.text
 
 @app.route('/grzejnik')
 def grzejnik():
@@ -103,6 +110,8 @@ def dane_z_licznika_pradu():
 
     content = request.get_json()
     print(content)
+    # przy wlaczeniu grzejnika wzrasta zuzycie pradu
+    content["Used"] = float(content["Used"]) + 0.300 * czy_grzeje
     dane_z_licznika_pradu_tab.append(content)
     print(f'srednia zuzycie pradu: {oblicz_srednia(dane_z_licznika_pradu_tab, "Used")}')
     print(f'srednia oddanego pradu: {oblicz_srednia( dane_z_licznika_pradu_tab, "Produced")}')

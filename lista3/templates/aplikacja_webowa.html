@@ -19,6 +19,13 @@
                 $("#status_grzejnik").text(`${data}`);
             });
         }
+        function zmiana_interwalu(port){
+            var x = document.getElementById("freq").value;
+            const url = `zmiana_interwalu?freq=${x}&port=${port}`
+            $.get(url, function(data, status){
+                console.log(`${data} and status is ${status}`);
+            });
+        }
     </script>
 
 </head>
@@ -34,10 +41,44 @@
     <button onclick="myFunction()">GRZEJNIK</button>
     <p id="status_grzejnik"></p>
 
-
-
+    <p>zmiana częstotliwości w aplikacji 1</p>
+    <select id="freq" onchange="zmiana_interwalu(2321)">
+    <option value="15">15</option>
+    <option value="30">30</option>
+    <option value="45">45</option>
+    <option value="60">60</option>
+    </select>
     <br>
-
+    <p>zmiana częstotliwości w aplikacji 2</p>
+    <select id="freq" onchange="zmiana_interwalu(2322)">
+    <option value="15">15</option>
+    <option value="30">30</option>
+    <option value="45">45</option>
+    <option value="60">60</option>
+    </select>
+    <br>
+    <p>zmiana częstotliwości w aplikacji 3</p>
+    <select id="freq" onchange="zmiana_interwalu(2323)">
+    <option value="15">15</option>
+    <option value="30">30</option>
+    <option value="45">45</option>
+    <option value="60">60</option>
+    </select>
+    <br>    <p>zmiana częstotliwości w aplikacji 4</p>
+    <select id="freq" onchange="zmiana_interwalu(2324)">
+    <option value="15">15</option>
+    <option value="30">30</option>
+    <option value="45">45</option>
+    <option value="60">60</option>
+    </select>
+    <br>    <p>zmiana częstotliwości w aplikacji 5</p>
+    <select id="freq" onchange="zmiana_interwalu(2325)">
+    <option value="15">15</option>
+    <option value="30">30</option>
+    <option value="45">45</option>
+    <option value="60">60</option>
+    </select>
+    <br>
     <br>
     {% for nazwa_apki, dane_z_apki in zbior_danych['sensory'].items() %}
     <h2>Aplikacja {{nazwa_apki}} </h2>
