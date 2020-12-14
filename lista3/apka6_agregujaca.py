@@ -3,8 +3,6 @@ import requests
 import paho.mqtt.client as mqtt
 from flask import Flask, request, render_template
 
-
-
 app = Flask(__name__)
 
 
@@ -55,6 +53,7 @@ def zmiana_interwalu():
 
     return req.text
 
+
 @app.route('/grzejnik')
 def grzejnik():
     global czy_grzeje
@@ -94,7 +93,7 @@ def dane_temp():
     content = request.get_json()
     print(content)
 
-    #poniewaz jezeli grzejnik jest wlaczony to dodajemy temperature
+    # poniewaz jezeli grzejnik jest wlaczony to dodajemy temperature
     content["Temp"] = float(content["Temp"]) + 5 * czy_grzeje
 
     dane_temp_tab.append(content)

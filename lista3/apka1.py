@@ -2,6 +2,14 @@ import base
 from datetime import datetime
 
 
+@base.app.route('/')
+def index():
+    return f'''
+    <h1>aplikacja pierwsza </h1>
+    sprawdź mnie :)
+    '''
+
+
 def znajdz_dane(czas):
     # print(czas)
     for i in range(len(dane["observations"])):
