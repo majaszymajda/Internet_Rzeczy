@@ -19,6 +19,17 @@
                 $("#status_grzejnik").text(`${data}`);
             });
         }
+
+        const url2 = 'okno';
+        function okno() {
+            $.get(url2, function(data, status){
+                console.log(`${data} and status is ${status}`);
+                $("#status_okna").text(`${data}`);
+            });
+        }
+    </script>
+    <script>
+
         function zmiana_interwalu(port){
             var x = document.getElementById("freq").value;
             const url = `zmiana_interwalu?freq=${x}&port=${port}`
@@ -40,6 +51,14 @@
 
     <button onclick="myFunction()">GRZEJNIK</button>
     <p id="status_grzejnik"></p>
+    </br>
+
+    <br>
+    <p>Otworz/zamknij Okno.</p>
+
+    <button onclick="okno()">OKNO</button>
+    <p id="status_okna"></p>
+
 
     <p>zmiana częstotliwości w aplikacji 1</p>
     <select id="freq" onchange="zmiana_interwalu(2321)">

@@ -12,6 +12,7 @@ dane_z_licznika_pradu_tab = []
 dane_z_paneli_tab = []
 dane_ilosci_osob_w_domu_tab = []
 czy_grzeje = False
+czy_otwarte = False
 
 
 temat1 = 'MajaiMarta/dane_pogodowe'
@@ -63,6 +64,15 @@ def grzejnik():
     return 'grzejnik grzeje'
 
 
+@app.route('/okno')
+def okno():
+    global czy_otwarte
+    czy_otwarte = not czy_otwarte
+    if czy_otwarte is False:
+        return 'okno zostało zamkniete'
+    return 'okno zostało otwarte'
+
+
 def oblicz_srednia(tablica, klucz):
     if len(tablica) == 0:
         print("brak danych")
@@ -94,7 +104,10 @@ def dane_temp():
     print(content)
 
     # poniewaz jezeli grzejnik jest wlaczony to dodajemy temperature
-    content["Temp"] = float(content["Temp"]) + 5 * czy_grzeje
+    content["Temp"] = float(content["Temp"]) + 4 * czy_grzeje
+
+    # jezeli otworzymy okno temperatura spada o 6 stopni
+    content["Temp"] = float(content["Temp"]) - 6 * czy_otwarte
 
     dane_temp_tab.append(content)
     print(f'srednia temperaturowa domu: {oblicz_srednia(dane_temp_tab, "Temp")}')
