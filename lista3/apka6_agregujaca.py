@@ -79,7 +79,7 @@ def oblicz_srednia(tablica, klucz):
         return None
     suma = sum([float(d[klucz]) for d in tablica])
     # print(sum/dzielnik)
-    return suma/len(tablica)
+    return round(suma/len(tablica), 2)
 
 
 @app.route('/dane_pogodowe', methods=['POST'])
@@ -88,10 +88,10 @@ def dane_pogodowe():
         return "it is not a json", 400
 
     content = request.get_json()
-    print(content)
+    # print(content)
     dane_pogodowe_tab.append(content)
-    print(f'srednia temperaturowa: {oblicz_srednia(dane_pogodowe_tab, "Temp")}')
-    print(f'srednia cisnienia: {oblicz_srednia(dane_pogodowe_tab, "Pres")}')
+    # print(f'srednia temperaturowa: {oblicz_srednia(dane_pogodowe_tab, "Temp")}')
+    # print(f'srednia cisnienia: {oblicz_srednia(dane_pogodowe_tab, "Pres")}')
     return 'thanks'
 
 
@@ -101,17 +101,39 @@ def dane_temp():
         return "it is not a json", 400
 
     content = request.get_json()
-    print(content)
+    # print(content)
 
-    # poniewaz jezeli grzejnik jest wlaczony to dodajemy temperature
-    content["Temp"] = float(content["Temp"]) + 4 * czy_grzeje
+    # poniewaz jezeli grzejnik jest wlaczony to dodajemy temperature i zmniejszamy wilgotnosc
+    content["Temp"] = round(float(content["Temp"]) + 5 * czy_grzeje, 2)
+    content["Hum"] = round(float(content["Hum"]) - 2 * czy_grzeje, 2)
 
     # jezeli otworzymy okno temperatura spada o 6 stopni
-    content["Temp"] = float(content["Temp"]) - 6 * czy_otwarte
+    content["Temp"] = round(float(content["Temp"]) - 6 * czy_otwarte, 2)
+    content["Hum"] = round(float(content["Hum"]) + 2 * czy_otwarte, 2)
+
+    # sprawdzanie czy w domu panuje optymalna temperature
+    if float(content["Temp"]) <= 21.0:
+        print("Temperatura w domu jest za niska!")
+        print('----------------------------------------------------------')
+        if czy_otwarte == 1:
+            okno()
+            print("Okno zostało zamknięte.")
+        else:
+            grzejnik()
+            print('Grzejnik został włączony.')
+    if float(content["Temp"]) > 26.0:
+        print("Temperatura w domu jest za wysoka! Okno zostało otwarte.")
+        print('--------------------------------------------------------')
+        if czy_grzeje == 1:
+            grzejnik()
+            print('Grzejnik został wyłączony.')
+        else:
+            okno()
+            print("Okno zostało otwarte.")
 
     dane_temp_tab.append(content)
-    print(f'srednia temperaturowa domu: {oblicz_srednia(dane_temp_tab, "Temp")}')
-    print(f'średnia wilgotnosc w domu : {oblicz_srednia(dane_temp_tab, "Hum")}')
+    # print(f'srednia temperaturowa domu: {oblicz_srednia(dane_temp_tab, "Temp")}')
+    # print(f'średnia wilgotnosc w domu : {oblicz_srednia(dane_temp_tab, "Hum")}')
     return 'thanks'
 
 
@@ -121,12 +143,12 @@ def dane_z_licznika_pradu():
         return "it is not a json", 400
 
     content = request.get_json()
-    print(content)
+    # print(content)
     # przy wlaczeniu grzejnika wzrasta zuzycie pradu
     content["Used"] = float(content["Used"]) + 0.300 * czy_grzeje
     dane_z_licznika_pradu_tab.append(content)
-    print(f'srednia zuzycie pradu: {oblicz_srednia(dane_z_licznika_pradu_tab, "Used")}')
-    print(f'srednia oddanego pradu: {oblicz_srednia( dane_z_licznika_pradu_tab, "Produced")}')
+    # print(f'srednia zuzycie pradu: {oblicz_srednia(dane_z_licznika_pradu_tab, "Used")}')
+    # print(f'srednia oddanego pradu: {oblicz_srednia( dane_z_licznika_pradu_tab, "Produced")}')
 
     return 'thanks'
 
@@ -137,9 +159,9 @@ def dane_z_paneli():
         return "it is not a json", 400
 
     content = request.get_json()
-    print(content)
+    # print(content)
     dane_z_paneli_tab.append(content)
-    print(f'srednia produkcja pradu: {oblicz_srednia(dane_z_paneli_tab, "Power")}')
+    # print(f'srednia produkcja pradu: {oblicz_srednia(dane_z_paneli_tab, "Power")}')
     return 'thanks'
 
 
@@ -149,9 +171,9 @@ def ilosc_osob_w_domu():
         return "it is not a json", 400
 
     content = request.get_json()
-    print(content)
+    # print(content)
     dane_ilosci_osob_w_domu_tab.append(content)
-    print(f'srednia ilosc osob w domu: {oblicz_srednia( dane_ilosci_osob_w_domu_tab, "Peoples")}')
+        # print(f'srednia ilosc osob w domu: {oblicz_srednia( dane_ilosci_osob_w_domu_tab, "Peoples")}')
 
     return 'thanks'
 
