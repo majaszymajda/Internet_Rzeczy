@@ -41,8 +41,8 @@ def index():
             }
 
         }
-
-    return render_template('aplikacja_webowa.html', zbior_danych=zbior_danych)
+    return render_template('czwarta.html', zbior_danych=zbior_danych)
+    # return render_template('aplikacja_webowa.html', zbior_danych=zbior_danych)
 
 
 @app.route("/zmiana_interwalu")
