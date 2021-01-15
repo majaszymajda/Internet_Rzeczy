@@ -1,3 +1,4 @@
+import csv
 import argparse
 import requests
 import paho.mqtt.client as mqtt
@@ -13,6 +14,11 @@ dane_z_paneli_tab = []
 dane_ilosci_osob_w_domu_tab = []
 czy_grzeje = False
 czy_otwarte = False
+temperatura = 0
+temp_pola = 0
+czy_zmiana = False
+czy_zmiana_2 = False
+czy_zapisuje = 0
 
 
 temat1 = 'MajaiMarta/dane_pogodowe'
@@ -43,6 +49,22 @@ def index():
         }
     return render_template('czwarta.html', zbior_danych=zbior_danych)
     # return render_template('aplikacja_webowa.html', zbior_danych=zbior_danych)
+
+
+@app.route("/zapisywanie_danych")
+def zapisywanie_danych(content, nazwa):
+    global czy_zapisuje
+    godzina_poczatkowa = request.args.get('time_start')
+    godzina_koncowa = request.args.get('time_end')
+    if godzina_poczatkowa == content["Time"]:
+        czy_zapisuje = 1
+    elif godzina_koncowa == content["Time"]:
+        czy_zapisuje = 0
+    while czy_zapisuje == 1:
+        with open(f'{nazwa}.csv', 'w', encoding='utf-8') as csvfile:
+            csvwrite = csv.writer(csvfile)
+            csvwrite.writerow(content)
+    return 'thx'
 
 
 @app.route("/zmiana_interwalu")
@@ -90,6 +112,7 @@ def dane_pogodowe():
     content = request.get_json()
     # print(content)
     dane_pogodowe_tab.append(content)
+
     # print(f'srednia temperaturowa: {oblicz_srednia(dane_pogodowe_tab, "Temp")}')
     # print(f'srednia cisnienia: {oblicz_srednia(dane_pogodowe_tab, "Pres")}')
     return 'thanks'
@@ -102,13 +125,37 @@ def dane_temp():
 
     content = request.get_json()
     # print(content)
+    global czy_zmiana
+    global temperatura
+    if czy_grzeje == czy_zmiana:
+        temperatura = 0
+        czy_zmiana = czy_grzeje
+    else:
+        if czy_grzeje == 1:
+            temperatura += 1
+            if temperatura > 5:
+                temperatura = 5
+        else:
+            temperatura -= 1
+
+    global czy_zmiana_2
+    global temp_pola
+    if czy_otwarte == czy_zmiana_2:
+        temp_pola = 0
+        czy_zmiana_2 = czy_otwarte
+    else:
+        if czy_otwarte == 1:
+            temp_pola += 1
+        else:
+            temp_pola -= 1
 
     # poniewaz jezeli grzejnik jest wlaczony to dodajemy temperature i zmniejszamy wilgotnosc
-    content["Temp"] = round(float(content["Temp"]) + 5 * czy_grzeje, 2)
+    # print(temperatura)
+    content["Temp"] = round(float(content["Temp"]) + temperatura * czy_grzeje, 2)
     content["Hum"] = round(float(content["Hum"]) - 2 * czy_grzeje, 2)
-
+    # print(temp_pola)
     # jezeli otworzymy okno temperatura spada o 6 stopni
-    content["Temp"] = round(float(content["Temp"]) - 6 * czy_otwarte, 2)
+    content["Temp"] = round(float(content["Temp"]) - temp_pola * czy_otwarte, 2)
     content["Hum"] = round(float(content["Hum"]) + 2 * czy_otwarte, 2)
 
     # sprawdzanie czy w domu panuje optymalna temperature
@@ -119,17 +166,23 @@ def dane_temp():
             okno()
             print("Okno zostało zamknięte.")
         else:
-            grzejnik()
-            print('Grzejnik został włączony.')
+            if czy_grzeje == 1:
+                print("Grzejnik już jest włączony")
+            else:
+                grzejnik()
+                print('Grzejnik został włączony.')
     if float(content["Temp"]) > 26.0:
-        print("Temperatura w domu jest za wysoka! Okno zostało otwarte.")
+        print("Temperatura w domu jest za wysoka! ")
         print('--------------------------------------------------------')
         if czy_grzeje == 1:
             grzejnik()
             print('Grzejnik został wyłączony.')
         else:
-            okno()
-            print("Okno zostało otwarte.")
+            if czy_otwarte == 1:
+                print("Okno jest juz otwarte")
+            else:
+                okno()
+                print("Okno zostało otwarte.")
 
     dane_temp_tab.append(content)
     # print(f'srednia temperaturowa domu: {oblicz_srednia(dane_temp_tab, "Temp")}')
@@ -173,7 +226,7 @@ def ilosc_osob_w_domu():
     content = request.get_json()
     # print(content)
     dane_ilosci_osob_w_domu_tab.append(content)
-        # print(f'srednia ilosc osob w domu: {oblicz_srednia( dane_ilosci_osob_w_domu_tab, "Peoples")}')
+    #   print(f'srednia ilosc osob w domu: {oblicz_srednia( dane_ilosci_osob_w_domu_tab, "Peoples")}')
 
     return 'thanks'
 
