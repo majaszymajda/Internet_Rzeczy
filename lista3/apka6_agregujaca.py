@@ -221,12 +221,12 @@ def dane_temp():
     # print(temperatura)
     content["Temp"] = round(float(content["Temp"]) + temperatura * czy_grzeje, 2)
     content["Hum"] = round(float(content["Hum"]) - 2 * czy_grzeje, 2)
-    content["Heater"] = czy_grzeje
+    content["Heater"] = int(czy_grzeje)
     # print(temp_pola)
     # jezeli otworzymy okno temperatura spada o 6 stopni
     content["Temp"] = round(float(content["Temp"]) - temp_pola * czy_otwarte, 2)
     content["Hum"] = round(float(content["Hum"]) + 2 * czy_otwarte, 2)
-    content["Window"] = czy_otwarte
+    content["Window"] = int(czy_otwarte)
 
     # sprawdzanie czy w domu panuje optymalna temperature
     if float(content["Temp"]) <= 21.0:
