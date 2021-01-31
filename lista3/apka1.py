@@ -38,14 +38,14 @@ def zwroc_dane(czas):
         po = znajdz_dane(base.godzina_na_str((czas[0], 30)))
         temperatura = (przed["Temp"] + po["Temp"])/2
         cisnienie = ((przed["Pres"] + po["Pres"])/2)
-        return {"Time:": base.godzina_na_str(czas), "Temp": temperatura, "Pres": cisnienie}
+        return {"Time": base.godzina_na_str(czas), "Temp": temperatura, "Pres": cisnienie}
 
     elif czas[1] == 45:
         przed = znajdz_dane(base.godzina_na_str((czas[0], 30)))
         po = znajdz_dane(base.godzina_na_str((czas[0]+1, 0)))
         temperatura = (przed["Temp"] + po["Temp"])/2
         cisnienie = ((przed["Pres"] + po["Pres"])/2)
-        return {"Time:": base.godzina_na_str(czas), "Temp": temperatura, "Pres": cisnienie}
+        return {"Time": base.godzina_na_str(czas), "Temp": temperatura, "Pres": cisnienie}
 
     return znajdz_dane(base.godzina_na_str(czas))
 

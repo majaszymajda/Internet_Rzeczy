@@ -1,0 +1,29 @@
+Posiadane dane to:
+APP1-temperatura powietrza w okolicy, odczytywana wraz z ciśnieniem i pobierana co pół godziny z sensora znajdującego się domu. Temperatura podana jest w stopniach Fahrenheita z dokładnością do jedności,
+ciśnienie w calach słupa wody z dokładnością do dwóch miejsc po przzcinku, w kodzie przeszktałcamy e na stopnie celcjusza oraz hPa.
+Dane odczytywane z pliku Dane/dane_pogodowe.json.
+Strukturą jest słownik gdzie najważniejsze klucze to: "Temp", "Pressure", "valid_time_gmt", które przechowują odpowiedznio:
+temperature w F, cisnienie w inHg.
+pobrane ze strony: https://www.wunderground.com/history/daily/pl/wroc%C5%82aw/EPWR/date/2020-9-19
+
+APP-2-temperatura powietrza w domu, oraz wilgotność powietrza w procentach.
+Pobierane przez sensor znajdujący się w mieszkaniu co 15 minut.
+Dane pobieraane z pliku Dane/dane_temp.csv.
+Strukturą jest tablica dwuwymiarowa, gdzie gdzie dane podzielone sa ze wzgledu na 'Time', 'Temp', 'Hum',
+które przechowują odpowiednio czas, temperaturę w oC i wilgotność powietrza w procentach.
+
+APP3-dane z licznika prądu, wysyłane przez producenta paneli.
+Co 15 min odczytywany jest prąd zużyty w kWh oraz ilość prądu wyprodukowanego, również w kWh.
+Dane pobierane z pliku Dane/dane_z_licznika_pradu.csv.
+Strukturą jest tablica dwuwymiarowa, gdzie dane podzielone sa ze wzgledu na 'Time', 'Used', 'Produced',
+które przechowują odpowiednio czas, ilość prądu zużytego w kWh i ilość prądu wyprodukowanego, rónież w kWh.
+
+APP4-ilość osób w domu, zliczana na postawie informacji z czujnika co pół godziny.
+Zliczana na podstawie danych z pliku o rozsszerzeniu Dane/ilosc_osob_w_domu.csv.
+Strukturą jest Tablica dwuwymiarowa, gdzie gdzie dane podzielone sa ze wzgledu na 'Time' oraz 'Peoples',
+które przechowują odpowiednio czas i liczbę ludzi znajdujących sie w domu.
+
+APP5-produkcja energii z paneli słonecznych w kWh, podawana co 15 inut.
+Na podstawie danych z Taurona. Dane pobierane z pliku Dane/dane_z_paneli.json.
+Strukturą jest słownik, gdzie najważniejsze klucze to 'Time' oraz 'Power',
+które przechowują odpowiednio czas oraz wyprodukowaną przez panee energię w kWh.

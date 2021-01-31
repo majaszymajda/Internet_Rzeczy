@@ -1,2 +1,4 @@
 Lista1/responses/*
 */__pycache__/*
+*.zip
+*/.vscode/*

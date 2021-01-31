@@ -1,0 +1,105 @@
+body {
+    background-image: url("hexellence.png");
+    font-family: Verdana;
+    font-size: 14px;
+    color: rgb(71, 69, 69);
+    font-family: 'Lato', 'sans-serif';
+    margin: 0 !important;
+}
+
+#d {margin-top: 10px;
+margin-bottom: 10px;
+text-align: center;
+margin-left: auto;
+margin-right: auto;
+color: #50159c;
+font-size:30px;
+letter-spacing: 2px;
+font:bold;
+font-family:Verdana; }
+
+#p {   color: #101010;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 25px;
+    margin-left: auto;
+    margin-right: auto;}
+
+.nadpis {height: 100px;
+     width:200px;
+      float:left;
+       text-align: center;
+        margin-left: 50px;}
+
+.subGreen {width: 150px;
+    color:white;
+    background-color: #388017;
+    border: 3px solid #7fad73;
+    border-radius: 5px;
+    font-size: 22px;
+    padding: 15px 10px;
+    cursor:pointer;
+    padding: 10px;
+    margin-left: 20px;
+    margin-right: 20px;}
+
+#dody {float:left;
+    width:40px;
+    height:50px;}
+
+#GENEROWANIE {
+    color: #7fad75;
+    font-size: 25px;
+}
+.dwld {
+    height: 50px;
+    float: left;
+    margin-left: 20px;
+    margin-right: 10px;
+}
+
+#appp {height:30px;
+    background-color: #cdf5c3;}
+
+#fffile {height:30px;
+    background-color: #cdf5c3;}
+
+#zatw {height: 100px;
+    width:200px;
+    float:left;
+    text-align: center;}
+
+#za {width: 150px;
+    color:#388017;
+    background-color: #7fad75;
+    border: 3px solid #7fad73;
+    border-radius: 5px;
+    font-size: 22px;
+    padding: 15px 10px;
+    cursor:pointer;
+    padding: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+    text-decoration: none;}
+
+.zc {width: 230px;
+    height: 100px;
+    float: left;
+    margin-right: 10px;
+    border-right: 2px dotted #c0b5b5;}
+
+.freq {height:30px;
+    width: 50px;
+    background-color: #cdf5c3;}
+
+.cool {
+    background-color:  rgb(1, 96, 128);
+    color: cornsilk;
+    margin-top: 20px;
+    border-radius: 5px;
+}
+
+select {
+    height: 30px;
+    background-color: #cdf5c3;
+}

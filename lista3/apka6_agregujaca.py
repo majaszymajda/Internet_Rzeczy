@@ -1,8 +1,10 @@
 import csv
+from datetime import datetime
 import argparse
 import requests
 import re
 import json
+from io import StringIO
 import paho.mqtt.client as mqtt
 from flask import Flask, request, render_template, make_response
 
@@ -24,11 +26,13 @@ czy_zmiana_2 = False
 czy_zapisuje = 0
 
 
-temat1 = 'MajaiMarta/dane_pogodowe'
-temat2 = 'MajaiMarta/dane_temp'
-temat3 = 'MajaiMarta/dane_z_licznika_pradu'
-temat4 = 'MajaiMarta/dane_z_paneli'
-temat5 = 'MajaiMarta/ilosc_osob_w_domu'
+tematy = [
+    'MajaiMarta/dane_pogodowe',
+    'MajaiMarta/dane_temp',
+    'MajaiMarta/dane_z_licznika_pradu',
+    'MajaiMarta/dane_z_paneli',
+    'MajaiMarta/ilosc_osob_w_domu',
+]
 
 
 @app.route('/')
@@ -51,86 +55,82 @@ def index():
 
         }
 
-    # response = make_response(render_template('na_razie_czwarta.html', zbior_danych=zbior_danych))
-    # response.headers['Content-type: text/csv']
-    # return response
-    return render_template('na_razie_czwarta.html', zbior_danych=zbior_danych)
+    return render_template('piata.html', zbior_danych=zbior_danych)
 
 
 @app.route('/download/<apka>/<godz_pocz_i_konc>/<format_pliku>')
 def download(apka, godz_pocz_i_konc, format_pliku):
-    czas_pocz_konc = re.split('-', godz_pocz_i_konc)
-    poczatek = str(czas_pocz_konc[0])
-    koniec = str(czas_pocz_konc[1])
+    poczatek, koniec = re.split('-', godz_pocz_i_konc)
+    # print(poczatek)
+    time_pocz = datetime.strptime(poczatek, '%H:%M').time()
+    time_kon = datetime.strptime(koniec, '%H:%M').time()
     dane = []
 
-    if poczatek < koniec:
-        pass
+    # if poczatek > koniec:
+    #     return "Poczatke nie moze byc mniejszy od konca", 400
 
-    if apka == 1:
-        for j in dane_pogodowe_tab:
-            content = dane_pogodowe_tab[j]
-            while content["Time"] >= poczatek and content["Time"] <= koniec:
-                dane.append(content)
-                nazwa = "dane_pogodowe"
-    elif apka == 2:
-        for j in dane_temp_tab:
-            content = dane_temp_tab[j]
-            while content["Time"] >= poczatek and content["Time"] <= koniec:
-                dane.append(content)
-                nazwa = "dane_temp"
-    elif apka == 3:
-        for j in dane_z_licznika_pradu_tab:
-            content = dane_z_licznika_pradu_tab[j]
-            while content["Time"] >= poczatek and content["Time"] <= koniec:
-                dane.append(content)
-                nazwa = "dane_z_licznika_pradu"
-    elif apka == 4:
-        for j in dane_z_paneli_tab:
-            content = dane_z_paneli_tab[j]
-            while content["Time"] >= poczatek and content["Time"] <= koniec:
-                dane.append(content)
-                nazwa = "dane_z_paneli"
+    apki = {
+        "1": {
+            "nazwa": "dane_pogodowe",
+            "dane": dane_pogodowe_tab
+        },
+        "2": {
+            "nazwa": "dane_temp",
+            "dane": dane_temp_tab
+        },
+        "3": {
+            "nazwa": "dane_z_licznika_pradu",
+            "dane": dane_z_licznika_pradu_tab
+        },
+        "4": {
+            "nazwa": "dane_z_paneli",
+            "dane": dane_z_paneli_tab
+        },
+        "5": {
+            "nazwa": "dane_ilosci_osob",
+            "dane": dane_ilosci_osob_w_domu_tab
+        }
+    }
+    if apka not in apki:
+        return "Nie ma takiej aplikacji", 400
+
+    nazwa = apki[apka]["nazwa"]
+    dane_tab = apki[apka]["dane"]
+    for d in dane_tab:
+        czas = datetime.strptime(d["Time"], '%H:%M').time()
+        if time_pocz <= czas <= time_kon:
+            dane.append(d)
+
+    print("dane:", dane)
+    if len(dane) < 1:
+        return "No data", 200
+
+    if format_pliku == 'csv':
+        si = StringIO()
+        csvwrite = csv.writer(
+            si, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+
+        headers = dane[0].keys()
+        csvwrite.writerow(headers)
+
+        for d in dane:
+            csvwrite.writerow([d[h] for h in headers])
+
+        response = make_response(si.getvalue())
+        response.headers['Content-type'] = "text/csv"
+        response.headers["Content-Disposition"] = f"attachment; filename=export_{nazwa}.csv"
+
+    elif format_pliku == 'json':
+        si = StringIO()
+        json.dump(dane, si)
+        response = make_response(si.getvalue())
+        response.headers['Content-type'] = "application/json"
+        response.headers["Content-Disposition"] = f"attachment; filename=export_{nazwa}.json"
     else:
-        for j in dane_ilosci_osob_w_domu_tab:
-            content = dane_ilosci_osob_w_domu_tab[j]
-            while content["Time"] >= poczatek and content["Time"] <= koniec:
-                dane.append(content)
-                nazwa = "dane_ilosci_osob"
+        return f"Nie wspierany typ danych: {format_pliku}", 400
 
-    if format_pliku == 1:
-        with open(f'dane.csv', 'w', encoding='utf-8') as csvfile:
-            csvwrite = csv.writer(csvfile)
-            csvwrite.writerow(dane)
-    else:
-        with open(f'dane.json', 'w', encoding='utf-8') as jsonfile:
-            json.dump(dane, jsonfile)
-
-    return 'txt'
-
-
-
-
-
-#     url = f'http://0.0.0.0:2328/download/{jaka_apka}/{pocz_czas}/{kon_czas}/{jaki_format}'
-#     graf_url = f'http://0.0.0.0:2328/download/{jaka_apka}/{pocz_czas}/{kon_czas}/{jaki_format}'
-#     return render()
-
-
-# @app.route("/zapisywanie_danych")
-# def zapisywanie_danych(content, nazwa):
-#     global czy_zapisuje
-#     godzina_poczatkowa = request.args.get('time_start')
-#     godzina_koncowa = request.args.get('time_end')
-#     if godzina_poczatkowa == content["Time"]:
-#         czy_zapisuje = 1
-#     elif godzina_koncowa == content["Time"]:
-#         czy_zapisuje = 0
-#     while czy_zapisuje == 1:
-#         with open(f'{nazwa}.csv', 'w', encoding='utf-8') as csvfile:
-#             csvwrite = csv.writer(csvfile)
-#             csvwrite.writerow(content)
-#     return 'thx'
+    print(response)
+    return response
 
 
 @app.route("/zmiana_interwalu")
@@ -176,7 +176,7 @@ def dane_pogodowe():
         return "it is not a json", 400
 
     content = request.get_json()
-    # print(content)
+    # print("Dane pogodowe:", content)
     dane_pogodowe_tab.append(content)
 
     # print(f'srednia temperaturowa: {oblicz_srednia(dane_pogodowe_tab, "Temp")}')
@@ -304,11 +304,8 @@ def ilosc_osob_w_domu():
 #   METODA MQTT
 def on_connect(client, userdata, flags, rc):
     print(f"Connected to MQTT with result code {str(rc)}")
-    client.subscribe(temat1)
-    client.subscribe(temat2)
-    client.subscribe(temat3)
-    client.subscribe(temat4)
-    client.subscribe(temat5)
+    for t in tematy:
+        client.subscribe(t)
 
 
 def on_message(client, userdata, msg):

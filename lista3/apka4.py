@@ -4,7 +4,7 @@ import base
 def zwroc_dane(czas):
 
     for i in range(1, 97):
-        czas_z_danych = f'{czas[0]}:{str(czas[1]).ljust(2, "0")}'
+        czas_z_danych = f'{str(czas[0]).rjust(2, "0")}:{str(czas[1]).rjust(2, "0")}'
         if czas_z_danych == dane[i][0]:
             return {"Time": dane[i][0], "Peoples": dane[i][1]}
 

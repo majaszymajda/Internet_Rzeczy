@@ -11,7 +11,7 @@ def zwroc_dane(czas):
                 moc += dane["manyData"][panel][czas_iter][5]
 
     # print(czas, moc)
-    return {'Time': base.godzina_na_str(czas), "Power": moc}
+    return {"Time": base.godzina_na_str(czas), "Power": moc}
 
 
 if __name__ == '__main__':
