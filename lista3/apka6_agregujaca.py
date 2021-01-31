@@ -42,7 +42,7 @@ def index():
             "sensor_pogodowy": dane_pogodowe_tab,
             "sensor_temperatury": dane_temp_tab,
             "sensor_z_licznika_pradu": dane_z_licznika_pradu_tab,
-            "sensor_z paneli": dane_z_paneli_tab,
+            "sensor_z_paneli": dane_z_paneli_tab,
             "sensor_ilosci_osob": dane_ilosci_osob_w_domu_tab
             },
         "srednie": {

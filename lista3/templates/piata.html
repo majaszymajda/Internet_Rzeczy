@@ -11,6 +11,7 @@
         }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <link rel="stylesheet" href="static/style.css">
 
     <script>
@@ -49,6 +50,9 @@
                 console.log(`${data} and status is ${status}`);
             });
         }
+
+        var coloR = ['rgb(0, 99, 132)','rgb(255, 0, 0)','rgb(0, 0, 132)','rgb(0, 99, 0)','rgb(0, 0, 0)','rgb(33, 255, 0)']
+
     </script>
 </head>
 
@@ -286,6 +290,70 @@
             {% endfor %}
 
         </table>
+
+        <div style="width:50%;">
+            <canvas id="wykres_{{ nazwa_apki }}"></canvas>
+        </div>
+
+        <script>
+            var config_{{ nazwa_apki }} = {
+                type: 'line',
+                data: {
+                    labels: [{% for dane in dane_z_apki %} "{{dane["Time"]}}", {% endfor %}],
+                    datasets: [
+
+                    {% for klucz in dane_z_apki[0] %}
+                        {% if klucz != "Time" %}
+                        {
+                            label: '{{ klucz }}',
+                            fill: false,
+                            backgroundColor: coloR[Math.floor(Math.random() * coloR.length)],
+                            borderColor: coloR[Math.floor(Math.random() * coloR.length)],
+                            data: [
+                            {% for dane in dane_z_apki %}
+                                {{ dane[klucz] }},
+                            {% endfor %}
+                            ]
+                        },
+                        {% endif %}
+                    {% endfor %}
+                ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '{{ nazwa_apki}}'
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    },
+                    hover: {
+                        mode: 'nearest',
+                        intersect: true
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Time'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Value'
+                            }
+                        }
+                    }
+                }
+            };
+        </script>
         {% endif %}
         <br>
     </div>
@@ -306,7 +374,7 @@
         <h3> Średnia zużytego pradu: {{zbior_danych['srednie']['srednia_zuzycia_pradu']}} </h3>
     </div>
     <div class='cool'>
-        {% elif nazwa_apki == 'sensor_z paneli' %}
+        {% elif nazwa_apki == 'sensor_z_paneli' %}
         <h3> Średnia z wyprodukowanego prądu:{{zbior_danych['srednie']['srednia_produkcji']}} </h3>
     </div>
     <div class='cool'>
@@ -318,6 +386,18 @@
     {% endif %}
     <br>
     {% endfor %}
+
+    <script>
+        window.onload = function() {
+            {% for nazwa_apki, dane_z_apki in zbior_danych['sensory'].items() %}
+            {% if dane_z_apki|count != 0 %}
+            console.log(config_{{ nazwa_apki }})
+            var ctx = document.getElementById('wykres_{{ nazwa_apki }}').getContext('2d');
+            window.myLine = new Chart(ctx, config_{{ nazwa_apki }});
+            {% endif %}
+            {% endfor %}
+        };
+    </script>
 
     <br>
 </body>

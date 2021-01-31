@@ -93,8 +93,8 @@ font-family:Verdana; }
     background-color: #cdf5c3;}
 
 .cool {
-    background-color:  rgb(1, 96, 128);
-    color: cornsilk;
+    background-color:  rgb(251, 251, 251);
+    color: rgb(0, 0, 0);
     margin-top: 20px;
     border-radius: 5px;
 }
