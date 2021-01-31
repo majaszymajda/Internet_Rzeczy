@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Inteligentny dom</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="static/style.css">
+
+    <script>
+        function myFunction() {
+            var url = 'grzejnik';
+            $.get(url, function (data, status) {
+                console.log(`${data} and status is ${status}`);
+                $("#status_grzejnik").text(`${data}`);
+            });
+        }
+
+        function okno() {
+            var url = 'okno';
+            $.get(url, function (data, status) {
+                console.log(`${data} and status is ${status}`);
+                $("#status_okna").text(`${data}`);
+            });
+        }
+
+        function pobieranie() {
+            app = $('#appp')[0].value
+            gp_h = $('#gp_h')[0].value
+            gp_m = $('#gp_m')[0].value
+            gk_h = $('#gk_h')[0].value
+            gk_m = $('#gk_m')[0].value
+            file = $('#file')[0].value
+
+            var url = `download/${app}/${gp_h}:${gp_m}-${gk_h}:${gk_m}/${file}`;
+            $.get(url, function (data, status) {
+            });
+        }
+
+        function zmiana_interwalu(port) {
+            var x = document.getElementById("freq").value;
+            const url = `zmiana_interwalu?freq=${x}&port=${port}`
+            $.get(url, function (data, status) {
+                console.log(`${data} and status is ${status}`);
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <div id="dupa">
+        <h1>Inteligenty Dom</h1>
+    </div>
+
+    <div id="poglowek ">
+        <p>Aplikacja zbierające dane na temat produkcji i zużycia prądu w mieszkaniu </p>
+    </div>
+
+    <div id='subby' style='float:left; '>
+        <div class='nadpis' style=" ">
+            <p>WŁĄCZ/WYŁĄCZ GRZEJNIK.</p>
+            <button onclick="myFunction()" class="subGreen">GRZEJNIK</button>
+            <p id="status_grzejnik"></p>
+        </div>
+        <div class='nadpis'>
+            <p>OTWÓRZ/ZAMKNIJ OKNO</p>
+            <button onclick="okno()" class="subGreen">OKNO</button>
+            <p id="status_okna"></p>
+        </div>
+
+        <div id="ALERTgrzejnik" style="float: left;"></div>
+        <div id="ALERTokno" style="float: left;">
+        </div>
+    </div>
+
+    <div id='dody'> </div>
+
+    <div id='downloady' style='float:left; width:700px;'>
+
+        <p id="GENEROWANIE">GENEROWANIE PLIKU:</p>
+
+        <div class="dwld">
+            <label for="appp"> WYBIERZ APLIKACJĘ:</label>
+            <select id="appp" name="appp">
+                <option value="1">APKA 1</option>
+                <option value="2">APKA 2</option>
+                <option value="3">APKA 3</option>
+                <option value="4">APKA 4</option>
+                <option value="5">APKA 5</option>
+            </select><br><br>
+        </div>
+
+        <div class="dwld">
+            <label for id="gp">GODZINA KOŃCOWA:</label>
+            <select id="gp_h" name="gp_h">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+                <option value="17">17</option>
+                <option value="18">18</option>
+                <option value="19">19</option>
+                <option value="20">20</option>
+                <option value="21">21</option>
+                <option value="22">22</option>
+                <option value="23">23</option>
+
+            </select>:
+            <select id="gp_m"
+                style="height:30px; width: 50px; background-color: #cdf5c3;">
+                <option value="00">00</option>
+                <option value="15">15</option>
+                <option value="30">30</option>
+                <option value="45">45</option>
+
+            </select>
+            <br><br>
+        </div>
+
+        <div class="dwld">
+            <label for id="fffile">WYBIERZ ROZSZERZENIE:</label>
+            <select id="file" name="file">
+                <option value="1">CSV</option>
+                <option value="2">JSON</option>
+            </select><br><br>
+        </div>
+
+        <div class="dwld">
+            <label for id="gk">GODZINA KOŃCOWA:</label>
+            <select id="gk_h" name="gk_h">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+                <option value="17">17</option>
+                <option value="18">18</option>
+                <option value="19">19</option>
+                <option value="20">20</option>
+                <option value="21">21</option>
+                <option value="22">22</option>
+                <option value="23">23</option>
+
+            </select>:
+            <select id="gk_m"
+                style="height:30px; width: 50px; background-color: #cdf5c3;">
+                <option value="00">00</option>
+                <option value="15">15</option>
+                <option value="30">30</option>
+                <option value="45">45</option>
+
+            </select>
+            <br><br>
+        </div>
+
+        <div id='zatw'>
+            <button onclick="pobieranie('appp', 'gp_h', 'gp_m', 'gk_h', 'gk_m', 'file')" id="za">ZATWIERDŹ</button>
+
+
+        </div>
+
+    </div>
+    <div style="clear: both;"></div>
+
+
+
+    <div style="clear:both;"></div>
+    <br><br><br>
+
+
+    <div class="zc" style="margin-left: 20px; ">
+        <p>zmiana częstotliwości w aplikacji 1</p>
+        <select class="freq" onchange="zmiana_interwalu(2321)">
+            <option value="15">15</option>
+            <option value="30">30</option>
+            <option value="45">45</option>
+            <option value="60">60</option>
+        </select>
+        <br>
+
+    </div>
+
+    <div class="zc" >
+        <p>zmiana częstotliwości w aplikacji 2</p>
+        <select class="freq" onchange="zmiana_interwalu(2322)">
+            <option value="15">15</option>
+            <option value="30">30</option>
+            <option value="45">45</option>
+            <option value="60">60</option>
+        </select>
+        <br>
+
+    </div>
+
+    <div class="zc">
+        <p>zmiana częstotliwości w aplikacji 3</p>
+        <select class="freq" onchange="zmiana_interwalu(2323)">
+            <option value="15">15</option>
+            <option value="30">30</option>
+            <option value="45">45</option>
+            <option value="60">60</option>
+        </select>
+        <br>
+
+    </div>
+
+    <div class="zc">
+        <p>zmiana częstotliwości w aplikacji 4</p>
+        <select class="freq" onchange="zmiana_interwalu(2324)">
+            <option value="15">15</option>
+            <option value="30">30</option>
+            <option value="45">45</option>
+            <option value="60">60</option>
+        </select>
+        <br>
+
+    </div>
+
+    <div style="width: 230px; height: 100px; float: left;">
+        <p>zmiana częstotliwości w aplikacji 5</p>
+        <select class="freq" onchange="zmiana_interwalu(2325)">
+            <option value="15">15</option>
+            <option value="30">30</option>
+            <option value="45">45</option>
+            <option value="60">60</option>
+        </select>
+        <br>
+    </div>
+
+    <div style="clear: both;"></div>
+
+    <br>
+
+    <div class="cool" >
+
+        {% for nazwa_apki, dane_z_apki in zbior_danych['sensory'].items() %}
+        <h2>Aplikacja {{nazwa_apki}} </h2>
+        {% if dane_z_apki|count == 0 %}
+
+
+        <p> Aplikacja wyłączona </p>
+        {% else %}
+        <p>Aplikacja włączona</p>
+
+        <table id="myTable" style="width:300px;">
+            <tr>
+                {% for klucz in dane_z_apki[0] %}
+                <th>{{klucz}}</th>
+                {% endfor %}
+
+            </tr>
+            {% for dane in dane_z_apki %}
+            <tr>
+                {% for wartosc in dane.values() %}
+                <td> {{ wartosc }} </td>
+
+
+
+                {% endfor %}
+
+            </tr>
+            {% endfor %}
+
+        </table>
+        <script>
+            const x = document.getElementById("myTable").rows[1].getElementsByTagName('td');
+            var grzej = document.getElementById('sub1');
+            var okok = document.getElementById('sub1');
+
+            var isFocusedGrzej = (document.activeElement === grzej);
+            var isFocusedOkok = (document.activeElement === okok);
+
+            if (x > 30) {
+                if (isFocusedGrzej == true) {
+                    document.getElementById("ALERTgrzejnik").innerHTML = ("WYŁĄCZ GRZEJNIK");
+                }
+            }
+            if (x < 20) {
+                if (isFocusedGrzej == false) {
+                    document.getElementById("ALERTgrzejnik").innerHTML = ("WŁĄCZ GRZEJNIK");
+                }
+            }
+
+            if (x < 15) {
+                if (isFocusedOkok == false) {
+                    document.getElementById("ALERTokno").innerHTML = ("ZAMKNIJ OKNO");
+                }
+            }
+        </script>
+
+        {% endif %}
+        <br>
+
+    </div>
+    <br>
+    <div style="clear:both"></div>
+
+    <div class='cool'>
+        {% if nazwa_apki == 'sensor_pogodowy' %}
+        <h3> Średnia z temperatury powietrza: {{zbior_danych['srednie']['srednia_temperaturowa_powietrza']}}</h3>
+    </div>
+
+    <div class='cool'>
+        {% elif nazwa_apki == 'sensor_temperatury' %}
+        <h3> Średnia z temperatury w domu: {{zbior_danych['srednie']['srednia_temperatury_w_domu']}}</h3>
+    </div>
+    <div class='cool'>
+        {% elif nazwa_apki == 'sensor_z_licznika_pradu' %}
+        <h3> Średnia zużytego pradu: {{zbior_danych['srednie']['srednia_zuzycia_pradu']}} </h3>
+    </div>
+    <div class='cool'>
+        {% elif nazwa_apki == 'sensor_z paneli' %}
+        <h3> Średnia z wyprodukowanego prądu:{{zbior_danych['srednie']['srednia_produkcji']}} </h3>
+    </div>
+    <div class='cool'>
+        {% elif nazwa_apki == 'sensor_ilosci_osob' %}
+        <h3> Średnia z ilości osób w domu: {{zbior_danych['srednie']['srednia_ludzi']}}</h3>
+    </div>
+
+    <div style="clear:both"></div>
+    {% endif %}
+    <br>
+    {% endfor %}
+
+    <br>
+
+
+
+
+
+</body>
+
+</html>

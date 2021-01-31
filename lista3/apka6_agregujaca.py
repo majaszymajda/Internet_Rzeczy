@@ -1,8 +1,11 @@
 import csv
 import argparse
 import requests
+import re
+import json
 import paho.mqtt.client as mqtt
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, make_response
+
 
 app = Flask(__name__)
 
@@ -47,24 +50,87 @@ def index():
             }
 
         }
-    return render_template('czwarta.html', zbior_danych=zbior_danych)
-    # return render_template('aplikacja_webowa.html', zbior_danych=zbior_danych)
+
+    # response = make_response(render_template('na_razie_czwarta.html', zbior_danych=zbior_danych))
+    # response.headers['Content-type: text/csv']
+    # return response
+    return render_template('na_razie_czwarta.html', zbior_danych=zbior_danych)
 
 
-@app.route("/zapisywanie_danych")
-def zapisywanie_danych(content, nazwa):
-    global czy_zapisuje
-    godzina_poczatkowa = request.args.get('time_start')
-    godzina_koncowa = request.args.get('time_end')
-    if godzina_poczatkowa == content["Time"]:
-        czy_zapisuje = 1
-    elif godzina_koncowa == content["Time"]:
-        czy_zapisuje = 0
-    while czy_zapisuje == 1:
-        with open(f'{nazwa}.csv', 'w', encoding='utf-8') as csvfile:
+@app.route('/download/<apka>/<godz_pocz_i_konc>/<format_pliku>')
+def download(apka, godz_pocz_i_konc, format_pliku):
+    czas_pocz_konc = re.split('-', godz_pocz_i_konc)
+    poczatek = str(czas_pocz_konc[0])
+    koniec = str(czas_pocz_konc[1])
+    dane = []
+
+    if poczatek < koniec:
+        pass
+
+    if apka == 1:
+        for j in dane_pogodowe_tab:
+            content = dane_pogodowe_tab[j]
+            while content["Time"] >= poczatek and content["Time"] <= koniec:
+                dane.append(content)
+                nazwa = "dane_pogodowe"
+    elif apka == 2:
+        for j in dane_temp_tab:
+            content = dane_temp_tab[j]
+            while content["Time"] >= poczatek and content["Time"] <= koniec:
+                dane.append(content)
+                nazwa = "dane_temp"
+    elif apka == 3:
+        for j in dane_z_licznika_pradu_tab:
+            content = dane_z_licznika_pradu_tab[j]
+            while content["Time"] >= poczatek and content["Time"] <= koniec:
+                dane.append(content)
+                nazwa = "dane_z_licznika_pradu"
+    elif apka == 4:
+        for j in dane_z_paneli_tab:
+            content = dane_z_paneli_tab[j]
+            while content["Time"] >= poczatek and content["Time"] <= koniec:
+                dane.append(content)
+                nazwa = "dane_z_paneli"
+    else:
+        for j in dane_ilosci_osob_w_domu_tab:
+            content = dane_ilosci_osob_w_domu_tab[j]
+            while content["Time"] >= poczatek and content["Time"] <= koniec:
+                dane.append(content)
+                nazwa = "dane_ilosci_osob"
+
+    if format_pliku == 1:
+        with open(f'dane.csv', 'w', encoding='utf-8') as csvfile:
             csvwrite = csv.writer(csvfile)
-            csvwrite.writerow(content)
-    return 'thx'
+            csvwrite.writerow(dane)
+    else:
+        with open(f'dane.json', 'w', encoding='utf-8') as jsonfile:
+            json.dump(dane, jsonfile)
+
+    return 'txt'
+
+
+
+
+
+#     url = f'http://0.0.0.0:2328/download/{jaka_apka}/{pocz_czas}/{kon_czas}/{jaki_format}'
+#     graf_url = f'http://0.0.0.0:2328/download/{jaka_apka}/{pocz_czas}/{kon_czas}/{jaki_format}'
+#     return render()
+
+
+# @app.route("/zapisywanie_danych")
+# def zapisywanie_danych(content, nazwa):
+#     global czy_zapisuje
+#     godzina_poczatkowa = request.args.get('time_start')
+#     godzina_koncowa = request.args.get('time_end')
+#     if godzina_poczatkowa == content["Time"]:
+#         czy_zapisuje = 1
+#     elif godzina_koncowa == content["Time"]:
+#         czy_zapisuje = 0
+#     while czy_zapisuje == 1:
+#         with open(f'{nazwa}.csv', 'w', encoding='utf-8') as csvfile:
+#             csvwrite = csv.writer(csvfile)
+#             csvwrite.writerow(content)
+#     return 'thx'
 
 
 @app.route("/zmiana_interwalu")
@@ -127,6 +193,7 @@ def dane_temp():
     # print(content)
     global czy_zmiana
     global temperatura
+    global czy_grzeje
     if czy_grzeje == czy_zmiana:
         temperatura = 0
         czy_zmiana = czy_grzeje
@@ -138,6 +205,7 @@ def dane_temp():
         else:
             temperatura -= 1
 
+    global czy_otwarte
     global czy_zmiana_2
     global temp_pola
     if czy_otwarte == czy_zmiana_2:
@@ -153,10 +221,12 @@ def dane_temp():
     # print(temperatura)
     content["Temp"] = round(float(content["Temp"]) + temperatura * czy_grzeje, 2)
     content["Hum"] = round(float(content["Hum"]) - 2 * czy_grzeje, 2)
+    content["Heater"] = czy_grzeje
     # print(temp_pola)
     # jezeli otworzymy okno temperatura spada o 6 stopni
     content["Temp"] = round(float(content["Temp"]) - temp_pola * czy_otwarte, 2)
     content["Hum"] = round(float(content["Hum"]) + 2 * czy_otwarte, 2)
+    content["Window"] = czy_otwarte
 
     # sprawdzanie czy w domu panuje optymalna temperature
     if float(content["Temp"]) <= 21.0:
